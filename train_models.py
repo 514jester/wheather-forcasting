@@ -55,12 +55,16 @@ def load_and_preprocess(filepath='data/weather_data.csv'):
     })
     
     # ── Handle missing values
+    # NOTE: pandas 3.0+ removed inplace fillna on Series — use assignment form.
     numeric_cols = ['Temperature (C)', 'Humidity (%)', 'Wind Speed (km/h)',
                     'Pressure (hPa)', 'Rainfall (mm)']
-    missing_before = df[numeric_cols].isnull().sum().sum()
+    missing_before = int(df[numeric_cols].isnull().sum().sum())
     
     for col in numeric_cols:
-        df[col].fillna(df[col].median(), inplace=True)
+        df[col] = df[col].fillna(df[col].median())  # pandas 3.0+ safe
+    
+    # Safety guardrail – drop any remaining rows with NaN in feature columns
+    df = df.dropna(subset=numeric_cols).reset_index(drop=True)
     
     print(f"[2] Handled {missing_before} missing values (filled with median)")
     
@@ -427,7 +431,7 @@ def save_artifacts(reg_results, clf_results, le, df):
         },
         'dataset': {
             'total_records': len(df),
-            'date_range': f"{df['Date'].min()} to {df['Date'].max()}",
+            'date_range': f"{str(df['Date'].min())[:10]} to {str(df['Date'].max())[:10]}",
             'features': ['Temperature (C)', 'Humidity (%)', 'Wind Speed (km/h)',
                           'Pressure (hPa)', 'Rainfall (mm)', 'Weather Condition']
         }
