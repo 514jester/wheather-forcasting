@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard – WeatherAI</title>
+    <meta name="description"
+        content="Interactive weather data visualization dashboard with charts for temperature, rainfall, model accuracy and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body class="page-dashboard">
+
+    <div class="sky-bg sky-bg--dim">
+        <div class="cloud cloud-2"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <span class="brand-icon">🌤️</span>
+                <span class="brand-name">WeatherAI</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/predict" class="nav-link">Predict</a></li>
+            <li><a href="/dashboard" class="nav-link active">Dashboard</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+        </ul>
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <div>
+                <h1>📊 Analytics Dashboard</h1>
+                <p>Historical weather trends and model performance metrics</p>
+            </div>
+            <div class="dashboard-controls">
+                <select id="time-range" class="form-input form-select" style="width:160px;">
+                    <option value="30">Last 30 days</option>
+                    <option value="60">Last 60 days</option>
+                    <option value="90" selected>Last 90 days</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ─── Metric Summary Cards ─── -->
+        <div class="metrics-row" id="metrics-row">
+            <div class="metric-chip">
+                <div class="mc-label">Avg Temperature</div>
+                <div class="mc-val" id="mc-avg-temp">--</div>
+                <div class="mc-unit">°C</div>
+            </div>
+            <div class="metric-chip">
+                <div class="mc-label">Avg Humidity</div>
+                <div class="mc-val" id="mc-avg-hum">--</div>
+                <div class="mc-unit">%</div>
+            </div>
+            <div class="metric-chip">
+                <div class="mc-label">Avg Rainfall</div>
+                <div class="mc-val" id="mc-avg-rain">--</div>
+                <div class="mc-unit">mm</div>
+            </div>
+            <div class="metric-chip">
+                <div class="mc-label">Avg Pressure</div>
+                <div class="mc-val" id="mc-avg-pres">--</div>
+                <div class="mc-unit">hPa</div>
+            </div>
+        </div>
+
+        <!-- ─── Charts Grid ─── -->
+        <div class="charts-grid">
+
+            <!-- Temperature Line Chart -->
+            <div class="chart-card chart-card--wide">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>🌡️ Temperature Trend</h3>
+                        <p>Daily temperature over the selected period</p>
+                    </div>
+                    <div class="chart-legend">
+                        <span class="legend-dot" style="background:#f97316;"></span> Temperature (°C)
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Rainfall Bar Chart -->
+            <div class="chart-card chart-card--half">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>🌧️ Daily Rainfall</h3>
+                        <p>Rainfall amounts per day</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="rainfallChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Humidity Chart -->
+            <div class="chart-card chart-card--half">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>💧 Humidity %</h3>
+                        <p>Daily humidity levels</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Model Accuracy Chart (Static image from training) -->
+            <div class="chart-card chart-card--half">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>🤖 Model Accuracy</h3>
+                        <p>Regression vs Classification performance</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper chart-wrapper--img">
+                    <img src="{{ url_for('static', filename='charts/model_accuracy.png') }}" alt="Model Accuracy Chart"
+                        class="chart-img"
+                        onerror="this.src='';this.parentElement.innerHTML='<div class=chart-placeholder>Run training first to see this chart</div>'" />
+                </div>
+            </div>
+
+            <!-- Confusion Matrix -->
+            <div class="chart-card chart-card--half">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>🔢 Confusion Matrix</h3>
+                        <p>Classification accuracy breakdown</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper chart-wrapper--img">
+                    <img src="{{ url_for('static', filename='charts/confusion_matrix.png') }}" alt="Confusion Matrix"
+                        class="chart-img"
+                        onerror="this.src='';this.parentElement.innerHTML='<div class=chart-placeholder>Run training first to see this chart</div>'" />
+                </div>
+            </div>
+
+            <!-- Weather Condition Doughnut -->
+            <div class="chart-card chart-card--half">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>⛅ Condition Distribution</h3>
+                        <p>Weather type breakdown (last 90 days)</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="conditionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pressure Trend -->
+            <div class="chart-card chart-card--wide">
+                <div class="chart-card-header">
+                    <div>
+                        <h3>📡 Atmospheric Pressure</h3>
+                        <p>Pressure variation over selected period</p>
+                    </div>
+                    <div class="chart-legend">
+                        <span class="legend-dot" style="background:#a78bfa;"></span> Pressure (hPa)
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>

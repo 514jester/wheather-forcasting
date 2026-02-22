@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About – WeatherAI</title>
+    <meta name="description"
+        content="Technical details about the Weather Forecasting models, dataset, and preprocessing pipeline." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body class="page-about">
+
+    <div class="sky-bg sky-bg--dim">
+        <div class="cloud cloud-1"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <span class="brand-icon">🌤️</span>
+                <span class="brand-name">WeatherAI</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/predict" class="nav-link">Predict</a></li>
+            <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="/about" class="nav-link active">About</a></li>
+        </ul>
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <main class="about-main">
+
+        {% set metrics = metrics or {} %}
+        {% set clf = metrics.get('classification', {}) %}
+        {% set reg = metrics.get('regression', {}) %}
+        {% set ds = metrics.get('dataset', {}) %}
+
+        <div class="about-container">
+
+            <!-- ─── Title ─── -->
+            <div class="about-hero">
+                <h1>🤖 About The System</h1>
+                <p>Technical documentation for the ML pipeline, models, and evaluation metrics.</p>
+            </div>
+
+            <!-- ─── Dataset Info ─── -->
+            <div class="about-section">
+                <h2>📂 Dataset</h2>
+                <div class="about-grid-2">
+                    <div class="about-info-card">
+                        <table class="info-table">
+                            <tr>
+                                <td class="it-key">Total Records</td>
+                                <td class="it-val">{{ ds.get('total_records', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="it-key">Date Range</td>
+                                <td class="it-val">{{ ds.get('date_range', 'N/A') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="it-key">Features Used</td>
+                                <td class="it-val">7 columns</td>
+                            </tr>
+                            <tr>
+                                <td class="it-key">Missing Values Handling</td>
+                                <td class="it-val">Median Imputation</td>
+                            </tr>
+                            <tr>
+                                <td class="it-key">Missing Value Rate</td>
+                                <td class="it-val">~1.5% per column</td>
+                            </tr>
+                            <tr>
+                                <td class="it-key">Train/Test Split</td>
+                                <td class="it-val">80% / 20%</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="about-info-card">
+                        <h4>Dataset Columns</h4>
+                        <ul class="feature-list">
+                            <li><span class="feat-type feat-date">DATE</span> Date</li>
+                            <li><span class="feat-type feat-num">NUM</span> Temperature (°C)</li>
+                            <li><span class="feat-type feat-num">NUM</span> Humidity (%)</li>
+                            <li><span class="feat-type feat-num">NUM</span> Wind Speed (km/h)</li>
+                            <li><span class="feat-type feat-num">NUM</span> Pressure (hPa)</li>
+                            <li><span class="feat-type feat-num">NUM</span> Rainfall (mm)</li>
+                            <li><span class="feat-type feat-cat">CAT</span> Weather Condition</li>
+                        </ul>
+                        <div class="feat-legend">
+                            <span class="feat-type feat-num">NUM</span> Numeric
+                            <span class="feat-type feat-cat">CAT</span> Categorical
+                            <span class="feat-type feat-date">DATE</span> Date
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Preprocessing ─── -->
+            <div class="about-section">
+                <h2>🔧 Preprocessing Pipeline</h2>
+                <div class="pipeline-steps-vert">
+                    <div class="pstep">
+                        <div class="pstep-num">1</div>
+                        <div class="pstep-body">
+                            <h4>Date Feature Engineering</h4>
+                            <p>Extracted Month, Day, Day-of-Year, and Season (Winter/Spring/Summer/Autumn) from the Date
+                                column to capture seasonality.</p>
+                        </div>
+                    </div>
+                    <div class="pstep">
+                        <div class="pstep-num">2</div>
+                        <div class="pstep-body">
+                            <h4>Missing Value Imputation</h4>
+                            <p>Approximately 1.5% of numeric values were missing. Filled using <strong>median
+                                    imputation</strong> (robust to outliers).</p>
+                        </div>
+                    </div>
+                    <div class="pstep">
+                        <div class="pstep-num">3</div>
+                        <div class="pstep-body">
+                            <h4>Label Encoding</h4>
+                            <p>Weather Condition (Sunny, Rainy, Cloudy, Drizzle, Partly Cloudy) encoded to integers
+                                using <code>sklearn.LabelEncoder</code>.</p>
+                        </div>
+                    </div>
+                    <div class="pstep">
+                        <div class="pstep-num">4</div>
+                        <div class="pstep-body">
+                            <h4>Feature Scaling</h4>
+                            <p><code>StandardScaler</code> (z-score normalization) applied to all numeric features to
+                                improve model convergence and performance.</p>
+                        </div>
+                    </div>
+                    <div class="pstep">
+                        <div class="pstep-num">5</div>
+                        <div class="pstep-body">
+                            <h4>Train/Test Split</h4>
+                            <p>80% training, 20% testing with <code>random_state=42</code>. Stratified split used for
+                                the classifier to preserve class balance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Model Performance ─── -->
+            <div class="about-section">
+                <h2>📊 Model Performance</h2>
+                <div class="about-grid-2">
+
+                    <!-- Regression -->
+                    <div class="model-perf-card">
+                        <div class="mpc-header">
+                            <span class="mpc-icon">📈</span>
+                            <div>
+                                <h3>Temperature Prediction</h3>
+                                <p>Regression Task</p>
+                            </div>
+                            <div class="mpc-best-badge">Best: {{ reg.get('best_model', 'N/A') }}</div>
+                        </div>
+                        <table class="info-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Linear Regression</th>
+                                    <th>Random Forest</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="it-key">MAE (°C)</td>
+                                    <td>{{ reg.get('linear_regression', {}).get('MAE', 'N/A') }}</td>
+                                    <td>{{ reg.get('random_forest', {}).get('MAE', 'N/A') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="it-key">RMSE (°C)</td>
+                                    <td>{{ reg.get('linear_regression', {}).get('RMSE', 'N/A') }}</td>
+                                    <td>{{ reg.get('random_forest', {}).get('RMSE', 'N/A') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="it-key">R² Score</td>
+                                    <td>{{ reg.get('linear_regression', {}).get('R2', 'N/A') }}</td>
+                                    <td>{{ reg.get('random_forest', {}).get('R2', 'N/A') }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Classification -->
+                    <div class="model-perf-card">
+                        <div class="mpc-header">
+                            <span class="mpc-icon">🎯</span>
+                            <div>
+                                <h3>Weather Condition</h3>
+                                <p>Classification Task</p>
+                            </div>
+                            <div class="mpc-best-badge">Best: {{ clf.get('best_model', 'N/A') }}</div>
+                        </div>
+                        <table class="info-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Accuracy</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="it-key">Decision Tree</td>
+                                    <td>{{ clf.get('decision_tree_accuracy', 'N/A') }}%</td>
+                                    <td>
+                                        {% if clf.get('best_model') == 'Decision Tree' %}
+                                        <span class="badge-best">✓ Best</span>
+                                        {% else %}
+                                        <span class="badge-runner">Baseline</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="it-key">Random Forest</td>
+                                    <td>{{ clf.get('random_forest_accuracy', 'N/A') }}%</td>
+                                    <td>
+                                        {% if clf.get('best_model') == 'Random Forest' %}
+                                        <span class="badge-best">✓ Best</span>
+                                        {% else %}
+                                        <span class="badge-runner">Baseline</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="clf-classes">
+                            <strong>Classes:</strong>
+                            {% for c in clf.get('classes', []) %}
+                            <span class="class-tag">{{ c }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Tech Stack ─── -->
+            <div class="about-section">
+                <h2>🛠️ Technology Stack</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-icon">🐍</div>
+                        <div class="tech-name">Python 3.10+</div>
+                        <div class="tech-role">Core Language</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">🌶️</div>
+                        <div class="tech-name">Flask</div>
+                        <div class="tech-role">Web Framework</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">🔬</div>
+                        <div class="tech-name">Scikit-learn</div>
+                        <div class="tech-role">ML Library</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">🐼</div>
+                        <div class="tech-name">Pandas</div>
+                        <div class="tech-role">Data Processing</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">🔢</div>
+                        <div class="tech-name">NumPy</div>
+                        <div class="tech-role">Numerical Computing</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">📊</div>
+                        <div class="tech-name">Matplotlib</div>
+                        <div class="tech-role">Chart Generation</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">📉</div>
+                        <div class="tech-name">Chart.js</div>
+                        <div class="tech-role">Frontend Charts</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-icon">🎨</div>
+                        <div class="tech-name">Vanilla CSS</div>
+                        <div class="tech-role">Styling</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Project Structure ─── -->
+            <div class="about-section">
+                <h2>📁 Project Structure</h2>
+                <div class="code-block">
+                    <pre>weather-forecasting/
+├── app.py                  ← Flask backend & API routes
+├── generate_dataset.py     ← Synthetic dataset generator
+├── train_models.py         ← ML training pipeline
+├── requirements.txt        ← Python dependencies
+├── README.md               ← Setup guide
+├── data/
+│   ├── weather_data.csv    ← Full training dataset
+│   └── recent_data.csv     ← Last 365 days (for charts)
+├── models/
+│   ├── regression_model.pkl
+│   ├── regression_scaler.pkl
+│   ├── classifier_model.pkl
+│   ├── classifier_scaler.pkl
+│   ├── label_encoder.pkl
+│   └── metrics.json
+├── static/
+│   ├── css/style.css
+│   ├── js/main.js
+│   ├── js/predict.js
+│   ├── js/dashboard.js
+│   └── charts/             ← Generated PNG charts
+└── templates/
+    ├── index.html
+    ├── predict.html
+    ├── dashboard.html
+    └── about.html</pre>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

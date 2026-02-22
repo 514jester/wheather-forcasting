@@ -1,0 +1,145 @@
+{
+  "regression": {
+    "best_model": "Random Forest",
+    "features": [
+      "Humidity (%)",
+      "Wind Speed (km/h)",
+      "Pressure (hPa)",
+      "Rainfall (mm)",
+      "Month",
+      "DayOfYear",
+      "Season"
+    ],
+    "linear_regression": {
+      "MAE": 4.9762,
+      "RMSE": 6.2075,
+      "R2": 0.6157
+    },
+    "random_forest": {
+      "MAE": 2.8132,
+      "RMSE": 3.5458,
+      "R2": 0.8746
+    },
+    "best_metrics": {
+      "MAE": 2.8132,
+      "RMSE": 3.5458,
+      "R2": 0.8746
+    }
+  },
+  "classification": {
+    "best_model": "Random Forest",
+    "features": [
+      "Temperature (C)",
+      "Humidity (%)",
+      "Wind Speed (km/h)",
+      "Pressure (hPa)",
+      "Rainfall (mm)",
+      "Month",
+      "Season"
+    ],
+    "decision_tree_accuracy": 77.53,
+    "random_forest_accuracy": 79.18,
+    "best_accuracy": 79.18,
+    "confusion_matrix": [
+      [
+        13,
+        0,
+        9,
+        0,
+        9
+      ],
+      [
+        0,
+        209,
+        0,
+        0,
+        0
+      ],
+      [
+        5,
+        1,
+        10,
+        0,
+        35
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        7,
+        0,
+        9,
+        0,
+        57
+      ]
+    ],
+    "classes": [
+      "Cloudy",
+      "Drizzle",
+      "Partly Cloudy",
+      "Rainy",
+      "Sunny"
+    ],
+    "classification_report": {
+      "Cloudy": {
+        "precision": 0.52,
+        "recall": 0.41935483870967744,
+        "f1-score": 0.4642857142857143,
+        "support": 31.0
+      },
+      "Drizzle": {
+        "precision": 0.990521327014218,
+        "recall": 1.0,
+        "f1-score": 0.9952380952380953,
+        "support": 209.0
+      },
+      "Partly Cloudy": {
+        "precision": 0.35714285714285715,
+        "recall": 0.19607843137254902,
+        "f1-score": 0.25316455696202533,
+        "support": 51.0
+      },
+      "Rainy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1.0
+      },
+      "Sunny": {
+        "precision": 0.5643564356435643,
+        "recall": 0.7808219178082192,
+        "f1-score": 0.6551724137931034,
+        "support": 73.0
+      },
+      "accuracy": 0.7917808219178082,
+      "macro avg": {
+        "precision": 0.48640412396012794,
+        "recall": 0.47925103757808907,
+        "f1-score": 0.47357215605578773,
+        "support": 365.0
+      },
+      "weighted avg": {
+        "precision": 0.7741130489376369,
+        "recall": 0.7917808219178082,
+        "f1-score": 0.7757167059166545,
+        "support": 365.0
+      }
+    }
+  },
+  "dataset": {
+    "total_records": 1825,
+    "date_range": "2019-01-01 00:00:00 to 2023-12-30 00:00:00",
+    "features": [
+      "Temperature (C)",
+      "Humidity (%)",
+      "Wind Speed (km/h)",
+      "Pressure (hPa)",
+      "Rainfall (mm)",
+      "Weather Condition"
+    ]
+  }
+}

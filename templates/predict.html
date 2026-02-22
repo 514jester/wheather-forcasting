@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Prediction – WeatherAI</title>
+    <meta name="description"
+        content="Input atmospheric conditions to get AI-powered weather predictions for temperature and weather conditions." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body class="page-predict">
+
+    <!-- Sky background -->
+    <div class="sky-bg sky-bg--dim">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <span class="brand-icon">🌤️</span>
+                <span class="brand-name">WeatherAI</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/predict" class="nav-link active">Predict</a></li>
+            <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+        </ul>
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <main class="predict-main">
+        <div class="predict-container">
+
+            <!-- ─── Left Panel: Form ─── -->
+            <div class="predict-form-panel">
+                <div class="panel-header">
+                    <h1>🎯 Weather Prediction</h1>
+                    <p>Enter current atmospheric conditions to get a forecast</p>
+                </div>
+
+                <form id="predict-form" class="predict-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="humidity" class="form-label">
+                                <span class="label-icon">💧</span> Humidity (%)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="humidity" name="humidity" class="form-input"
+                                    placeholder="e.g. 65" min="0" max="100" step="0.1" required />
+                                <div class="input-rangebar">
+                                    <div class="rangebar-fill" id="humidity-fill"></div>
+                                </div>
+                            </div>
+                            <span class="field-hint">Range: 0 – 100%</span>
+                            <span class="field-error" id="err-humidity"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="wind_speed" class="form-label">
+                                <span class="label-icon">💨</span> Wind Speed (km/h)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="wind_speed" name="wind_speed" class="form-input"
+                                    placeholder="e.g. 18" min="0" max="100" step="0.1" required />
+                                <div class="input-rangebar">
+                                    <div class="rangebar-fill" id="wind-fill"></div>
+                                </div>
+                            </div>
+                            <span class="field-hint">Range: 0 – 100 km/h</span>
+                            <span class="field-error" id="err-wind"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pressure" class="form-label">
+                                <span class="label-icon">🌡️</span> Pressure (hPa)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="pressure" name="pressure" class="form-input"
+                                    placeholder="e.g. 1013" min="950" max="1050" step="0.1" required />
+                            </div>
+                            <span class="field-hint">Normal: 1013 hPa · Range: 970 – 1040</span>
+                            <span class="field-error" id="err-pressure"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="prev_temperature" class="form-label">
+                                <span class="label-icon">🌡️</span> Previous Temperature (°C)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="prev_temperature" name="prev_temperature" class="form-input"
+                                    placeholder="e.g. 24" min="-20" max="50" step="0.1" required />
+                            </div>
+                            <span class="field-hint">Latest known temperature (°C)</span>
+                            <span class="field-error" id="err-prev-temp"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="month" class="form-label">
+                                <span class="label-icon">📅</span> Month
+                            </label>
+                            <select id="month" name="month" class="form-input form-select">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-group--auto">
+                            <!-- Quick Fill Buttons -->
+                            <label class="form-label">
+                                <span class="label-icon">⚡</span> Quick Presets
+                            </label>
+                            <div class="preset-btns">
+                                <button type="button" class="preset-btn" data-preset="sunny">☀️ Sunny</button>
+                                <button type="button" class="preset-btn" data-preset="rainy">🌧️ Rainy</button>
+                                <button type="button" class="preset-btn" data-preset="cloudy">⛅ Cloudy</button>
+                                <button type="button" class="preset-btn" data-preset="storm">⛈️ Storm</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-predict" id="predict-btn">
+                        <span class="btn-spinner" id="btn-spinner" style="display:none;">⏳</span>
+                        <span id="btn-text">🔮 Generate Forecast</span>
+                    </button>
+                </form>
+
+                <!-- Prediction History -->
+                <div class="history-panel" id="history-panel" style="display:none;">
+                    <div class="history-header">
+                        <h3>📋 Prediction History</h3>
+                        <button class="btn-sm" id="download-csv-btn">⬇️ Download CSV</button>
+                    </div>
+                    <div class="history-list" id="history-list"></div>
+                </div>
+            </div>
+
+            <!-- ─── Right Panel: Results ─── -->
+            <div class="predict-result-panel" id="result-panel">
+                <div class="result-placeholder" id="result-placeholder">
+                    <div class="placeholder-icon">🌤️</div>
+                    <h3>Your Forecast Awaits</h3>
+                    <p>Fill in the atmospheric conditions and click <strong>Generate Forecast</strong> to see
+                        predictions.</p>
+                    <div class="placeholder-tips">
+                        <div class="tip">💡 Use presets to fill common conditions</div>
+                        <div class="tip">💡 All predictions run locally via ML models</div>
+                        <div class="tip">💡 Download history as CSV report</div>
+                    </div>
+                </div>
+
+                <div class="result-card" id="result-card" style="display:none;">
+                    <!-- Weather icon + condition -->
+                    <div class="result-hero">
+                        <div class="result-weather-icon" id="result-icon">⛅</div>
+                        <div class="result-weather-info">
+                            <div class="result-condition" id="result-condition">--</div>
+                            <div class="result-temp">
+                                <span id="result-temp-val">--</span>
+                                <span class="result-temp-unit">°C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detail grid -->
+                    <div class="result-details-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Feels Like</div>
+                            <div class="detail-value" id="det-feels">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rain Chance</div>
+                            <div class="detail-value" id="det-rain">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Confidence</div>
+                            <div class="detail-value" id="det-conf">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Humidity</div>
+                            <div class="detail-value" id="det-hum">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Pressure</div>
+                            <div class="detail-value" id="det-pres">--</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Wind</div>
+                            <div class="detail-value" id="det-wind">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Rain Progress Bar -->
+                    <div class="rain-bar-section">
+                        <div class="rain-bar-label">
+                            <span>☔ Precipitation Probability</span>
+                            <span id="rain-pct-label">--</span>
+                        </div>
+                        <div class="rain-bar-track">
+                            <div class="rain-bar-fill" id="rain-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Condition advice -->
+                    <div class="condition-advice" id="condition-advice"></div>
+
+                    <!-- Timestamp -->
+                    <div class="result-timestamp" id="result-timestamp"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+</body>
+
+</html>
